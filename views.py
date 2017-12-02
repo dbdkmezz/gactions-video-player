@@ -1,6 +1,6 @@
 import logging
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from libs.google_actions import GoogleActions, GoogleRequest, NoJsonException
 
@@ -20,17 +20,19 @@ def index(request):
 
     query = google_request.text
     if not query:
-        return google_actions.ask("What would you like to play?")
+        return JsonResponse(google_actions.ask("What would you like to play?"))
     else:
         query = query.lower()
         video = VideoFolder.get_next_video_matching_query(query)
         if video:
             video.play()
-            return google_actions.tell("OK! Playing {}".format(video.name))
+            return JsonResponse(google_actions.tell("OK! Playing {}".format(video.name)))
         if any(s in query for s in ('play', 'pause', 'resume')):
             Messenger.play_pause_video()
-            return google_actions.tell("On it!")
+            return JsonResponse(google_actions.tell("On it!"))
         if 'blue' in query:
             Messenger.open_website('https://www.bbc.co.uk/iplayer/episodes/p04tjbtx')
-            return google_actions.tell("OK! Opening Blue Planet, on iPlayer.")
-        return google_actions.ask("Sorry. I don't know how to {}. What would you like to play?".format(query))
+            return JsonResponse(google_actions.tell("OK! Opening Blue Planet, on iPlayer."))
+        return JsonResponse(google_actions.ask(
+            "Sorry. I don't know how to {}. What would you like to play?".format(query))
+        )
