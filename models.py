@@ -5,7 +5,9 @@ import datetime
 from django.db import models
 
 from .messenger import Messenger
-from .exceptions import AliasesContainSpaces, FolderContainsNoVideos, InvalidPath
+from .exceptions import (
+    AliasesContainSpaces, FolderContainsNoVideos, InvalidPath,
+)
 
 
 logger = logging.getLogger('django')
@@ -23,11 +25,13 @@ class VideoFolder(models.Model):
             return
 
         if ' ' in self.aliases:
-            raise AliasesContainSpaces("Aliases should be a comma separated list, with no spaces.")
+            raise AliasesContainSpaces(
+                "Aliases should be a comma separated list, with no spaces.")
 
         videos = list(self.paths_of_videos_in_folder())
         if not videos:
-            raise FolderContainsNoVideos("{} contains no video files".format(self.path))
+            raise FolderContainsNoVideos(
+                "{} contains no video files".format(self.path))
 
         # need to save it now so it has an id, then we can add the videos
         super(VideoFolder, self).save(*args, **kwargs)
@@ -49,7 +53,10 @@ class VideoFolder(models.Model):
             print(folder)
             for name in folder.aliases.split(','):
                 if name.lower() in query.lower():
-                    video = Video.objects.filter(folder__id=folder.id, last_played=None).order_by('file_name').first()
+                    video = Video.objects.filter(
+                        folder__id=folder.id,
+                        last_played=None
+                    ).order_by('file_name').first()
                     return video
 
     def paths_of_videos_in_folder(self):
