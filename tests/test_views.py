@@ -1,17 +1,17 @@
-import json
 from unittest.mock import patch
 
 from django.test import TestCase
 from django.http import HttpResponse, JsonResponse
 
-from libs.google_actions import Util as GoogleUtil, NoJsonException
+from libs.google_actions import Util as GoogleUtil
+from libs.google_actions.tests.mocks import MockRequest
 
 from apps.video_player.views import index
 
 
 class TestViews(TestCase):
     def test_hello_world_if_not_json(self):
-        result = index(MockRequest(raise_no_json=True))
+        result = index(MockRequest(body='NOT JSON'))
         self.assertIs(type(result), HttpResponse)
         self.assertIn("Hello world", str(result.content))
 
@@ -34,24 +34,3 @@ class TestViews(TestCase):
         self.assertIn(
             "Opening Blue Planet",
             GoogleUtil.get_text_from_google_response(result))
-
-
-class MockRequest(object):
-    def __init__(self, argument_text_value=None, raise_no_json=False):
-        self.argument_text_value = argument_text_value
-        self.raise_no_json = raise_no_json
-
-    @property
-    def body(self):
-        if self.raise_no_json:
-            raise NoJsonException
-
-        if not self.argument_text_value:
-            input_dict = {}
-        else:
-            input_dict = {'arguments': [{'textValue': self.argument_text_value}]}
-        return json.dumps({
-            'user': {'userId': 'TEST_USER_ID'},
-            'conversation': {'conversationId': 'TEST_CONVERSATION_ID'},
-            'inputs': [input_dict],
-        }).encode('utf-8')

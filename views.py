@@ -27,9 +27,7 @@ def index(request):
     video = VideoFolder.get_next_video_matching_query(query)
     if video:
         video.play()
-        return JsonResponse(
-            google_actions.tell("OK! Playing {}".format(video.name))
-        )
+        return JsonResponse(google_actions.tell("OK! Playing {}".format(video.name)))
 
     if any(s in query for s in ('play', 'pause', 'resume')):
         Messenger.play_pause_video()
@@ -38,11 +36,8 @@ def index(request):
     if 'blue' in query:
         Messenger.open_website(
             'https://www.bbc.co.uk/iplayer/episodes/p04tjbtx')
-        return JsonResponse(
-            google_actions.tell("OK! Opening Blue Planet, on iPlayer.")
-        )
+        return JsonResponse(google_actions.tell("OK! Opening Blue Planet, on iPlayer."))
 
     return JsonResponse(google_actions.ask(
-        "Sorry. I don't know how to {}. "
-        "What would you like to play?".format(query))
+        "Sorry. I don't know how to {}. What would you like to play?".format(query))
     )

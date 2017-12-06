@@ -15,14 +15,12 @@ class TestVideoFolderModel(TestCase):
                 VideoFolderFactory(aliases='test testy')
 
     def test_raises_if_invalid_path(self):
-        with patch('apps.video_player.models.os.path.isdir',
-                   return_value=False):
+        with patch('apps.video_player.models.os.path.isdir', return_value=False):
             with self.assertRaises(InvalidPath):
                 VideoFolderFactory()
 
     def test_creates_videos(self):
-        with patch('apps.video_player.models.os.path.isdir',
-                   return_value=True):
+        with patch('apps.video_player.models.os.path.isdir', return_value=True):
             with patch('apps.video_player.models.os.listdir',
                        return_value=['test.avi', 'readme.txt', 'test2.mp4']):
                 folder = VideoFolderFactory()
@@ -33,10 +31,8 @@ class TestVideoFolderModel(TestCase):
                          set(['test.avi', 'test2.mp4']))
 
     def test_gets_next_video(self):
-        with patch('apps.video_player.models.os.path.isdir',
-                   return_value=True):
-            with patch('apps.video_player.models.os.listdir',
-                       return_value=['video.avi']):
+        with patch('apps.video_player.models.os.path.isdir', return_value=True):
+            with patch('apps.video_player.models.os.listdir', return_value=['video.avi']):
                 correctFolder = VideoFolderFactory(
                     aliases='hello,other',
                     priority=50
@@ -57,10 +53,8 @@ class TestVideoModel(TestCase):
         self.assertFalse(Video.is_video_file("testavi"))
 
     def test_play_sets_datetime(self):
-        with patch('apps.video_player.models.os.path.isdir',
-                   return_value=True):
-            with patch('apps.video_player.models.os.listdir',
-                       return_value=['video.avi']):
+        with patch('apps.video_player.models.os.path.isdir', return_value=True):
+            with patch('apps.video_player.models.os.listdir', return_value=['video.avi']):
                 VideoFolderFactory()
         video = Video.objects.get()
         self.assertFalse(video.last_played)

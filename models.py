@@ -1,8 +1,8 @@
 import os
 import logging
-import datetime
 
 from django.db import models
+from django.utils import timezone
 
 from .messenger import Messenger
 from .exceptions import (
@@ -89,7 +89,7 @@ class Video(models.Model):
         return any(filename.lower().endswith(".{}".format(e)) for e in ENDINGS)
 
     def play(self):
-        self.last_played = datetime.datetime.now()
+        self.last_played = timezone.now()
         self.save()
         Messenger.open_video(os.path.join(self.folder.path, self.file_name))
 
