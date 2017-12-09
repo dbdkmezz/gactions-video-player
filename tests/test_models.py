@@ -27,8 +27,8 @@ class TestVideoFolderModel(TestCase):
                 videos = Video.objects.filter(folder=folder)
         self.assertEqual(videos.count(), 2)
         self.assertEqual(videos.filter(last_played=None).count(), 2)
-        self.assertEqual(set(v.file_name for v in videos),
-                         set(['test.avi', 'test2.mp4']))
+        self.assertSetEqual(set(v.file_name for v in videos),
+                            set(['test.avi', 'test2.mp4']))
 
     def test_gets_next_video(self):
         with patch('apps.video_player.models.os.path.isdir', return_value=True):
@@ -57,7 +57,7 @@ class TestVideoModel(TestCase):
             with patch('apps.video_player.models.os.listdir', return_value=['video.avi']):
                 VideoFolderFactory()
         video = Video.objects.get()
-        self.assertFalse(video.last_played)
+        self.assertIsNone(video.last_played)
         with patch('apps.video_player.models.Messenger'):
             video.play()
-        self.assertTrue(video.last_played)
+        self.assertIsNotNone(video.last_played)
